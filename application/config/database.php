@@ -75,11 +75,11 @@ $query_builder = TRUE;
 
 $db['default'] = array(
 	'dsn'	=> '',
-	'port' 	   => '3307',
+	'port' 	   => '3308',
 	'hostname' => '125.162.138.4',
 	'username' => 'root',
-	'password' => 'admin',
-	'database' => 'pdamgianyar_manometer',
+	'password' => '',
+	'database' => 'pdamgianyar_laporan_pembantu',
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',
 	'pconnect' => FALSE,
@@ -98,10 +98,10 @@ $db['default'] = array(
 
 $db['datacenter'] = array(
 	'dsn'	=> '',
-	'port' 	   => '3307',
+	'port' 	   => '3308',
 	'hostname' => '125.162.138.4',
 	'username' => 'root',
-	'password' => 'admin',
+	'password' => '',
 	'database' => 'pdamgianyar_datacenter',
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',

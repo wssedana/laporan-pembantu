@@ -23,7 +23,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 | a PHP script and you can easily do that on your own.
 |
 */
-$config['base_url'] = 'http://125.162.138.4:8012/project/manoDev_/';
+$config['base_url'] = 'http://125.162.138.4:8008/laporan-pembantu/';
 
 /*
 |--------------------------------------------------------------------------
