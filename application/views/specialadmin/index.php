@@ -1,0 +1,399 @@
+<!-- Begin Page Content -->
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-4">
+            <form action="<?= base_url('Admin/dash1'); ?>" method="POST">
+                <div class="form-group">
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" name="periode" id="periode" placeholder="Periode . . .">
+                        <div class="input-group-append">
+                            <input type="submit" name="submit" class="btn btn-success">
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <small class="text-mute">Total Kecamatan Terbaca :<?= $total_kecamatan; ?></small>
+    <small class="text-mute"> (<?= $periodeBaca; ?>)</small>
+    <!-- Content Row -->
+    <div class="row">
+        <!-- Earnings (Monthly) Card Example -->
+        <?php foreach ($perKecamatan as $row) {  ?>
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-primary shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <a href="<?= base_url('Admin/getPerZona1/' . $row['kecamatan'] . '/' . $periode) ?>">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Kecamatan <?= $row['kecamatan']; ?></div>
+                                </a>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800"><?= number_format($row['rerata_presure'], 1, ",", ".") . " Bar"; ?></div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-tachometer-alt fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <?php } ?>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4"></div>
+        <div class="col-md-4">
+            <?= $this->pagination->create_links(); ?>
+        </div>
+        <div class="col-md-4"></div>
+    </div>
+
+    <div class="row">
+
+        <!-- Area Chart -->
+        <div class="col-xl-8 col-lg-7">
+            <div class="card shadow mb-4">
+                <!-- Card Header - Dropdown -->
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Presentase Presure Air / Wilayah</h6>
+                    <div class="dropdown no-arrow">
+                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
+                            <div class="dropdown-header">Dropdown Header:</div>
+                            <a class="dropdown-item" href="#">Action</a>
+                            <a class="dropdown-item" href="#">Another action</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#">Something else here</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Card Body -->
+                <div class="card-body">
+                    <div class="chart-area">
+                        <canvas id="chartPerKecamatan">
+
+                        </canvas>
+                    </div>
+
+                    <div class="mt-4 text-center small">
+                        <span class="mr-2">
+                            <i class="fas fa-circle sbaik"></i> Sangat Baik
+                        </span>
+                        <span class="mr-2">
+                            <i class="fas fa-circle baik"></i> Baik
+                        </span>
+                        <span class="mr-2">
+                            <i class="fas fa-circle kurang"></i> Kurang
+                        </span>
+                        <span class="mr-2">
+                            <i class="fas fa-circle buruk"></i> Buruk
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pie Chart -->
+        <div class="col-xl-4 col-lg-5">
+            <div class="card shadow mb-4">
+                <!-- Card Header - Dropdown -->
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Jumlah Manometer / Kecamatan</h6>
+                    <div class="dropdown no-arrow">
+                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
+                            <div class="dropdown-header">Dropdown Header:</div>
+                            <a class="dropdown-item" href="#">Action</a>
+                            <a class="dropdown-item" href="#">Another action</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#">Something else here</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Card Body -->
+                <div class="card-body">
+                    <div class="chart-area">
+                        <canvas id="lineManoPerKecamatan">
+
+                        </canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content Row -->
+    <div class="row">
+
+        <!-- Content Column -->
+        <div class="col-lg-6 mb-4">
+
+            <!-- Project Card Example -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Projects</h6>
+                </div>
+                <div class="card-body">
+                    <div class="card-body">
+                        <?php foreach ($perKecamatanNoLimit as $row) {
+                            $id_kecamatan = $row['id_kecamatan'];
+                            $hitungMano = $this->Dashboard_model->jumlahManoKecamatan($id_kecamatan, $periode);
+                            $standar = $this->Dashboard_model->getNewPresureKecamatan($periode, $id_kecamatan);
+                            $rumus2 = ($standar / $hitungMano['total_manometer_kecamatan']) * 100;
+                            $width = $rumus2 . "%";
+                            if ($rumus2 >= $rumus['awalSbaik'] && $rumus2 <= $rumus['akhirSbaik']) {
+                                $class = 'class="progress-bar bg-success"';
+                            } else if ($rumus2 >= $rumus['awalBaik'] && $rumus2 < $rumus['akhirBaik']) {
+                                $class = 'class="progress-bar bg-primary"';
+                            } else if ($rumus2 < $rumus['akhirKurang'] && $rumus2 >= $rumus['awalKurang']) {
+                                $class = 'class="progress-bar bg-warning"';
+                            } else {
+                                $class = 'class="progress-bar bg-danger"';
+                            } ?>
+                            <h4 class="small font-weight-bold"><?= $row['kecamatan']; ?><span class="float-right"><?= number_format($rumus2, 1, ",", "."); ?>%</span></h4>
+                            <div class="progress mb-4">
+                                <div <?= $class; ?> role="progressbar" style="width: <?= $width; ?>" aria-valuenow="<?= $rumus2; ?>" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        <?php  } ?>
+
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Color System -->
+            <div class="row">
+                <div class="col-lg-6 mb-4">
+                    <div class="card bg-primary text-white shadow">
+                        <div class="card-body">
+                            Primary
+                            <div class="text-white-50 small">#4e73df</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 mb-4">
+                    <div class="card bg-success text-white shadow">
+                        <div class="card-body">
+                            Success
+                            <div class="text-white-50 small">#1cc88a</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 mb-4">
+                    <div class="card bg-info text-white shadow">
+                        <div class="card-body">
+                            Info
+                            <div class="text-white-50 small">#36b9cc</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 mb-4">
+                    <div class="card bg-warning text-white shadow">
+                        <div class="card-body">
+                            Warning
+                            <div class="text-white-50 small">#f6c23e</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 mb-4">
+                    <div class="card bg-danger text-white shadow">
+                        <div class="card-body">
+                            Danger
+                            <div class="text-white-50 small">#e74a3b</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 mb-4">
+                    <div class="card bg-secondary text-white shadow">
+                        <div class="card-body">
+                            Secondary
+                            <div class="text-white-50 small">#858796</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-lg-6 mb-4">
+
+            <!-- Approach -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Periode Baca Manometer</h6>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless table-hover">
+                        <thead>
+                            <tr style="text-align: center">
+                                <th scope="col">#</th>
+                                <th scope="col">Periode</th>
+                                <th scope="col">Create Time</th>
+                                <th scope="col">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php $i = 1; ?>
+                            <?php foreach ($listPeriode as $lsPeriode) : ?>
+                                <tr style="text-align: center">
+                                    <th scope="row"><?= $i++; ?></th>
+                                    <td><?= $lsPeriode['table_name']; ?></td>
+                                    <td><?= $lsPeriode['create_time']; ?></td>
+                                    <td>
+                                        <a href="" class="badge badge-success">edit</a>
+                                        <a href="" class="badge badge-danger">delete</a>
+                                    </td>
+                                </tr>
+
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Illustrations -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Illustrations</h6>
+                </div>
+                <div class="card-body">
+                    <div class="text-center">
+                        <img class="img-fluid px-3 px-sm-4 mt-3 mb-4" style="width: 25rem;" src="img/undraw_posting_photo.svg" alt="">
+                    </div>
+                    <p>Add some quality, svg illustrations to your project courtesy of <a target="_blank" rel="nofollow" href="https://undraw.co/">unDraw</a>, a constantly updated collection of beautiful svg images that
+                        you can use completely free and without attribution!</p>
+                    <a target="_blank" rel="nofollow" href="https://undraw.co/">Browse Illustrations on unDraw &rarr;</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+<!-- /.container-fluid -->
+
+</div>
+<!-- End of Main Content -->
+<script type="text/javascript">
+    $(function() {
+        $("#periode").datepicker({
+            format: 'yyyymm',
+            viewMode: "months",
+            minViewMode: "months",
+            autoClose: true
+        });
+    });
+
+
+    var ctx = document.getElementById('chartPerKecamatan').getContext('2d');
+    var chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: [
+                <?php
+                if (count($perKecamatanNoLimit) > 0) {
+                    foreach ($perKecamatanNoLimit as $row) {
+                        $id_kecamatan = $row['id_kecamatan'];
+                        $hitungMano = $this->Dashboard_model->jumlahManoKecamatan($id_kecamatan, $periode);
+                        $standar = $this->Dashboard_model->getNewPresureKecamatan($periode, $id_kecamatan);
+                        $rumus2 = ($standar / $hitungMano['total_manometer_kecamatan']) * 100;
+                        echo "'" . $row['kecamatan'] . " " . number_format($rumus2, 1, ",", ".") . "%" . "',";
+                    }
+                }
+                ?>
+            ],
+            datasets: [{
+                label: 'Ranting',
+                data: [
+                    <?php
+                    if (count($perKecamatanNoLimit) > 0) {
+                        foreach ($perKecamatanNoLimit as $row) {
+                            $id_kecamatan = $row['id_kecamatan'];
+                            $hitungMano = $this->Dashboard_model->jumlahManoKecamatan($id_kecamatan, $periode);
+                            $standar = $this->Dashboard_model->getNewPresureKecamatan($periode, $id_kecamatan);
+                            $rumus2 = ($standar / $hitungMano['total_manometer_kecamatan']) * 100;
+                            echo $rumus2 . ", ";
+                            if ($rumus2 >= $rumus['awalSbaik'] && $rumus2 <= $rumus['akhirSbaik']) {
+                                $bg[] = "#66ff33";
+                            } else if ($rumus2 < $rumus['akhirBaik'] && $rumus2 >= $rumus['awalBaik']) {
+                                $bg[] = "#035efc";
+                            } else if ($rumus2 < $rumus['akhirKurang'] && $rumus2 >= $rumus['awalKurang']) {
+                                $bg[] = "#ffff00";
+                            } else {
+                                $bg[] = "#ff0000";
+                            }
+                        }
+                    }
+                    ?>
+                ],
+                backgroundColor: [
+                    <?php
+                    for ($i = 0; $i < count($perKecamatanNoLimit); $i++) {
+                        echo "'" . $bg[$i] . "',";
+                    }
+
+                    ?>
+                ]
+
+
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            legend: {
+                position: 'top',
+            }
+        }
+    });
+
+    var ctx2 = document.getElementById('lineManoPerKecamatan').getContext('2d');
+    var chart2 = new Chart(ctx2, {
+        type: 'line',
+        data: {
+            labels: [
+                <?php
+                if (count($AllKecamatan) > 0) {
+                    foreach ($AllKecamatan as $row) {
+                        $id_kecamatan = $row['id_kecamatan'];
+                        $hitungMano = $this->Dashboard_model->getManoPerWilayah($id_kecamatan);
+                        echo "'" . $row['kecamatan'] . "',";
+                    }
+                }
+                ?>
+            ],
+
+
+            datasets: [{
+                label: 'Jumlah Manometer',
+                fill: false,
+                lineTension: 0.1,
+                borderColor: "rgba(59, 100, 222, 1)",
+                data: [
+                    <?php
+                    if (count($AllKecamatan) > 0) {
+                        foreach ($AllKecamatan as $row) {
+                            $id_kecamatan = $row['id_kecamatan'];
+                            $hitungMano = $this->Dashboard_model->getManoPerWilayah($id_kecamatan);
+                            echo $hitungMano . ", ";
+                        }
+                    }
+                    ?>
+                ],
+                backgroundColor: "#ff0000"
+
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            legend: {
+                position: 'top',
+            }
+        }
+    });
+</script>
