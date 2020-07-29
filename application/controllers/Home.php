@@ -11,8 +11,6 @@ class posting extends CI_Controller
     }
     public function index()
     {
-?>
-        <h1>Hellow World !!!</h1>
-<?php
+        echo "Hallo world";
     }
 }
